@@ -1,6 +1,6 @@
 # Inclusion Pipeline
 
-A Python package for microscopy image analysis that segments objects using **MicroSAM** and classifies them as inclusions or non-inclusions using a fine-tuned **ResNet101** model.
+A Python package for microscopy image analysis that segments objects using **MicroSAM** and classifies them as swiss cheese or solid using a fine-tuned **ResNet101** model.
 
 ## Installation
 
@@ -36,7 +36,7 @@ result = pipeline(image)
 
 # Print results
 print(f"Swiss Cheese found: {result.num_swiss_cheese}")
-print(f"Solid found: {result.solid}")
+print(f"Solid found: {result.num_solid}")
 ```
 
 ## Usage in Jupyter Notebooks
@@ -62,10 +62,10 @@ result = pipeline(image)
 fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 axes[0].imshow(image, cmap='gray')
 axes[0].set_title('Original')
-axes[1].imshow(result.inclusion_mask, cmap='Reds')
-axes[1].set_title(f'Inclusions ({result.num_inclusions})')
-axes[2].imshow(result.non_inclusion_mask, cmap='Greens')
-axes[2].set_title(f'Non-inclusions ({result.num_non_inclusions})')
+axes[1].imshow(result.swiss_cheese_mask, cmap='Reds')
+axes[1].set_title(f'Swiss Cheese ({result.num_swiss_cheese})')
+axes[2].imshow(result.solid_mask, cmap='Greens')
+axes[2].set_title(f'Solid ({result.num_solid})')
 plt.show()
 ```
 
@@ -182,7 +182,7 @@ instance_mask = segmenter.segment(preprocessed_image)
 # Use just the classifier
 classifier = ResNetClassifier()
 prediction = classifier.predict(crop)  # 0 or 1
-probabilities = classifier.predict_proba(crop)  # [p_non_inclusion, p_inclusion]
+probabilities = classifier.predict_proba(crop)  # [p_solid, p_swiss_cheese]
 ```
 
 ## Requirements

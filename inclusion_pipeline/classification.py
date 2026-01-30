@@ -21,7 +21,7 @@ class ResNetClassifier:
     
     Example:
         >>> classifier = ResNetClassifier()
-        >>> pred = classifier.predict(crop)  # 0 = non-inclusion, 1 = inclusion
+        >>> pred = classifier.predict(crop)  # 0 = solid, 1 = swiss cheese
     """
     
     def __init__(
@@ -172,7 +172,7 @@ class ResNetClassifier:
             image: Input image as numpy array or PIL Image
             
         Returns:
-            Array of class probabilities [non_inclusion_prob, inclusion_prob]
+            Array of class probabilities [solid_prob, swiss_cheese_prob]
         """
         # Preprocess
         if isinstance(image, np.ndarray):

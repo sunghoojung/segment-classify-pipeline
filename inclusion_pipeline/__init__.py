@@ -18,13 +18,13 @@ Usage:
     result = pipeline(image, verbose=True)
     
     # Access results
-    print(f"Inclusions found: {result.num_inclusions}")
-    print(f"Non-inclusions found: {result.num_non_inclusions}")
+    print(f"Swiss cheese found: {result.num_swiss_cheese}")
+    print(f"Solid found: {result.num_solid}")
     
     # Get masks
-    inclusion_mask = result.inclusion_mask
-    non_inclusion_mask = result.non_inclusion_mask
-    combined_mask = result.combined_mask  # 0=bg, 1=non-inclusion, 2=inclusion
+    swiss_cheese_mask = result.swiss_cheese_mask
+    solid_mask = result.solid_mask
+    combined_mask = result.combined_mask  # 0=bg, 1=swiss cheese, 2=solid
 """
 
 from .pipeline import SegmentClassifyPipeline, PipelineOutput

@@ -19,13 +19,13 @@ class PipelineOutput:
     Output from the segmentation and classification pipeline.
     
     Attributes:
-        inclusion_mask: Binary mask of inclusion objects (H, W)
-        non_inclusion_mask: Binary mask of non-inclusion objects (H, W)
-        combined_mask: Combined mask where 0=background, 1=non-inclusion, 2=inclusion
-        num_inclusions: Count of detected inclusions
-        num_non_inclusions: Count of detected non-inclusions
+        swiss_cheese_mask: Binary mask of swiss cheese objects (H, W)
+        solid_mask: Binary mask of solid objects (H, W)
+        combined_mask: Combined mask where 0=background, 1=swiss cheese, 2=solid
+        num_swiss_cheese: Count of detected swiss cheese
+        num_solid: Count of detected solid
         instance_masks: List of individual binary masks for each object
-        instance_labels: List of class labels (0=non-inclusion, 1=inclusion) for each object
+        instance_labels: List of class labels (0=solid, 1=swiss cheese) for each object
     """
     swiss_cheese_mask: np.ndarray
     solid_mask: np.ndarray
@@ -37,24 +37,44 @@ class PipelineOutput:
     
     # Aliases for backward compatibility
     @property
+    def non_inclusion_mask(self) -> np.ndarray:
+        """Alias for solid_mask."""
+        return self.solid_mask
+
+    @property
+    def inclusion_mask(self) -> np.ndarray:
+        """Alias for swiss_cheese_mask."""
+        return self.swiss_cheese_mask
+
+    @property
+    def num_non_inclusions(self) -> int:
+        """Alias for num_solid."""
+        return self.num_solid
+
+    @property
+    def num_inclusions(self) -> int:
+        """Alias for num_swiss_cheese."""
+        return self.num_swiss_cheese
+
+    @property
     def class1_mask(self) -> np.ndarray:
-        """Alias for non_inclusion_mask"""
-        return self.non_inclusion_mask
+        """Alias for solid_mask (class 0)."""
+        return self.solid_mask
     
     @property
     def class2_mask(self) -> np.ndarray:
-        """Alias for inclusion_mask"""
-        return self.inclusion_mask
+        """Alias for swiss_cheese_mask (class 1)."""
+        return self.swiss_cheese_mask
     
     @property
     def num_class1(self) -> int:
-        """Alias for num_non_inclusions"""
-        return self.num_non_inclusions
+        """Alias for num_solid (class 0)."""
+        return self.num_solid
     
     @property
     def num_class2(self) -> int:
-        """Alias for num_inclusions"""
-        return self.num_inclusions
+        """Alias for num_swiss_cheese (class 1)."""
+        return self.num_swiss_cheese
 
 
 def _display_two_images(image1, image2, title1, title2):
@@ -136,7 +156,7 @@ def _display_classification_result(original, mask, swiss_cheese_mask, solid_mask
 class SegmentClassifyPipeline:
     """
     Pipeline that segments objects using MicroSAM and classifies each
-    object as inclusion or non-inclusion using a ResNet101 model.
+    object as swiss cheese or solid using a ResNet101 model.
     
     Uses regionprops to extract bounding boxes and crops from the original image.
     
@@ -315,10 +335,10 @@ class SegmentClassifyPipeline:
             instance_masks.append(obj_mask)
             instance_labels.append(pred_class)
         
-        # 6. Create combined mask: 0=bg, 1=non-inclusion, 2=inclusion
+        # 6. Create combined mask: 0=bg, 1=swiss cheese, 2=solid
         combined_mask = np.zeros((h, w), dtype=np.uint8)
-        combined_mask[solid_mask > 0] = 1
-        combined_mask[swiss_cheese_mask > 0] = 2
+        combined_mask[swiss_cheese_mask > 0] = 1
+        combined_mask[solid_mask > 0] = 2
         
         num_swiss_cheese = int((np.array(instance_labels) == 1).sum()) if instance_labels else 0
         num_solid = int((np.array(instance_labels) == 0).sum()) if instance_labels else 0

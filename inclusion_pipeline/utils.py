@@ -8,17 +8,17 @@ from typing import Tuple
 
 def colorize_mask(
     mask: np.ndarray,
-    swiss_cheese_color: Tuple[int, int, int] = (0, 255, 0),   # Green
-    solid_color: Tuple[int, int, int] = (255, 0, 0),       # Red
-    background_color: Tuple[int, int, int] = (0, 0, 0),        # Black
+    swiss_cheese_color: Tuple[int, int, int] = (255, 0, 0),   # Red
+    solid_color: Tuple[int, int, int] = (0, 255, 0),          # Green
+    background_color: Tuple[int, int, int] = (0, 0, 0),       # Black
 ) -> np.ndarray:
     """
-    Convert a combined mask (0=bg, 1=non-inclusion, 2=inclusion) to a colored RGB image.
+    Convert a combined mask (0=bg, 1=swiss cheese, 2=solid) to a colored RGB image.
     
     Args:
         mask: Combined mask with values 0, 1, 2
-        swiss_cheese_color: RGB color for swiss cheese inclusions (default: green)
-        solid_color: RGB color for solid inclusions (default: red)
+        swiss_cheese_color: RGB color for swiss cheese inclusions (default: red)
+        solid_color: RGB color for solid inclusions (default: green)
         background_color: RGB color for background (default: black)
         
     Returns:
@@ -37,8 +37,8 @@ def colorize_mask(
 def overlay_mask_on_image(
     image: np.ndarray,
     mask: np.ndarray,
-    swiss_cheese_color: Tuple[int, int, int] = (0, 255, 0),
-    solid_color: Tuple[int, int, int] = (255, 0, 0),
+    swiss_cheese_color: Tuple[int, int, int] = (255, 0, 0),
+    solid_color: Tuple[int, int, int] = (0, 255, 0),
     alpha: float = 0.4,
 ) -> np.ndarray:
     """
@@ -47,8 +47,8 @@ def overlay_mask_on_image(
     Args:
         image: Original RGB image (H, W, 3). If grayscale, will be converted.
         mask: Combined mask with values 0, 1, 2
-        swiss_cheese_color: RGB color for swiss cheese inclusions (default: green)
-        solid_color: RGB color for solid inclusions (default: red)
+        swiss_cheese_color: RGB color for swiss cheese inclusions (default: red)
+        solid_color: RGB color for solid inclusions (default: green)
         alpha: Transparency of the overlay (0=invisible, 1=opaque)
         
     Returns:
