@@ -35,8 +35,8 @@ image = np.array(Image.open("cell_image.tif"))
 result = pipeline(image)
 
 # Print results
-print(f"Inclusions found: {result.num_inclusions}")
-print(f"Non-inclusions found: {result.num_non_inclusions}")
+print(f"Swiss Cheese found: {result.num_swiss_cheese}")
+print(f"Solid found: {result.solid}")
 ```
 
 ## Usage in Jupyter Notebooks
@@ -53,7 +53,7 @@ from PIL import Image
 pipeline = SegmentClassifyPipeline()
 
 # Load image
-image = np.array(Image.open("your_image.tif"))
+image = np.array(Image.open("your_image.czi"))
 
 # Run pipeline
 result = pipeline(image)
@@ -81,13 +81,13 @@ result = pipeline(image)
 overlay = overlay_mask_on_image(
     image,
     result.combined_mask,
-    inclusion_color=(255, 0, 0),      # Red for inclusions
-    non_inclusion_color=(0, 255, 0),  # Green for non-inclusions
+    swiss_cheese_color=(255, 0, 0),      # Red for Swiss Cheese
+    solid_color=(0, 255, 0),  # Green for Solid
     alpha=0.4
 )
 
 plt.imshow(overlay)
-plt.title(f'Inclusions: {result.num_inclusions}, Non-inclusions: {result.num_non_inclusions}')
+plt.title(f'Swiss Cheese Inclusions: {result.num_swiss_cheese}, Solid Inclusions: {result.num_solid}')
 plt.show()
 ```
 
@@ -103,14 +103,14 @@ pipeline = SegmentClassifyPipeline()
 image_folder = Path("./images")
 results = []
 
-for img_path in image_folder.glob("*.tif"):
+for img_path in image_folder.glob("*.czi"):
     image = np.array(Image.open(img_path))
     result = pipeline(image)
     
     results.append({
         'filename': img_path.name,
-        'inclusions': result.num_inclusions,
-        'non_inclusions': result.num_non_inclusions,
+        'Swiss Cheese Num': result.num_swiss_cheese,
+        'Solid Num': result.num_solid,
     })
     
 # Convert to DataFrame
@@ -128,7 +128,6 @@ result = pipeline(
     preprocess=True,       # Apply gaussian + sigmoid preprocessing
     sigma=2.0,             # Gaussian blur sigma
     sigmoid_cutoff=0.25,   # Sigmoid contrast cutoff
-    min_object_area=100,   # Minimum object size in pixels
 )
 ```
 
@@ -139,7 +138,7 @@ result = pipeline(image)
 
 # Loop through each detected object
 for i, (mask, label) in enumerate(zip(result.instance_masks, result.instance_labels)):
-    label_name = "inclusion" if label == 1 else "non-inclusion"
+    label_name = "Swiss Cheese" if label == 1 else "Solid"
     area = mask.sum()
     print(f"Object {i}: {label_name}, area = {area} pixels")
 ```
@@ -150,11 +149,11 @@ The pipeline returns a `PipelineOutput` object with:
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `inclusion_mask` | `np.ndarray` | Binary mask of inclusions |
-| `non_inclusion_mask` | `np.ndarray` | Binary mask of non-inclusions |
-| `combined_mask` | `np.ndarray` | 0=background, 1=non-inclusion, 2=inclusion |
-| `num_inclusions` | `int` | Count of detected inclusions |
-| `num_non_inclusions` | `int` | Count of detected non-inclusions |
+| `swiss_cheese_mask` | `np.ndarray` | Binary mask of swiss cheese |
+| `solid_mask` | `np.ndarray` | Binary mask of solid |
+| `combined_mask` | `np.ndarray` | 0=background, 1=swiss cheese, 2=solid |
+| `num_swiss_cheese` | `int` | Count of detected swiss cheese |
+| `num_solid` | `int` | Count of detected solid |
 | `instance_masks` | `List[np.ndarray]` | Individual masks for each object |
 | `instance_labels` | `List[int]` | Class labels (0 or 1) for each object |
 

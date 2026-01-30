@@ -209,11 +209,9 @@ class SegmentClassifyPipeline:
         self,
         image: np.ndarray,
         preprocess: bool = True,
-        min_object_area: int = 100,
         sigma: float = 2.0,
         sigmoid_cutoff: float = 0.25,
         verbose: bool = False,
-        show_crops: bool = False,
     ) -> PipelineOutput:
         """
         Run the full pipeline on an image.
@@ -224,7 +222,6 @@ class SegmentClassifyPipeline:
                    - RGB: (H, W, 3)
                    - 16-bit or 8-bit
             preprocess: Whether to apply preprocessing (gaussian + sigmoid + normalize)
-            min_object_area: Minimum pixel area for an object to be classified
             sigma: Gaussian blur sigma for preprocessing
             sigmoid_cutoff: Cutoff for sigmoid contrast adjustment
             verbose: If True, display images at each step for debugging
