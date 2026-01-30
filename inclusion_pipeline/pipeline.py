@@ -307,6 +307,13 @@ class SegmentClassifyPipeline:
             # Get bounding box: (min_row, min_col, max_row, max_col)
             min_row, min_col, max_row, max_col = region.bbox
             
+            # Add a small buffer around the crop 
+            buffer = 5
+            min_row = max(0, min_row - buffer)
+            min_col = max(0, min_col - buffer)
+            max_row = min(h, max_row + buffer)
+            max_col = min(w, max_col + buffer)
+            
             # Extract crop from ORIGINAL image using bounding box
             crop = image[min_row:max_row, min_col:max_col].copy()
             
